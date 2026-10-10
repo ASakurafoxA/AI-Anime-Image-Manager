@@ -10,7 +10,16 @@ import {
 } from "@/services/ai/state";
 import { suggestTags as aiSuggestTags } from "@/services/ai-embedder";
 import { getFolderSubtreeIds } from "@/services/folder-hierarchy";
-import { invalidateTagSearch } from "@/services/tag-search-revision";
+import {
+  persistTagCounts,
+  readPersistedTagCounts,
+  readTagCountCache,
+  writeTagCountCache,
+} from "@/services/tag-count-cache";
+import {
+  getTagSearchRevision,
+  invalidateTagSearch,
+} from "@/services/tag-search-revision";
 import {
   getHiddenTagsState,
   setTagHiddenById,
@@ -90,6 +99,30 @@ export const getPhotoTagAnalysisStatus = os
     };
   });
 
+/**
+ * 读图库指纹 —— 用来判断落盘快照是否过期。
+ * 四个数任意一个变了都说明图库内容动过：图片数、软删除图片数、关联行数、关联最大 id。
+ * 成本实测：8 万图 47ms / 32 万图 180ms，只在「内存缓存未命中且是全局视图」时跑一次。
+ */
+function readTagCountFingerprint() {
+  const db = getDatabase();
+  const photoRow = db.get<{ c: number; d: number }>(
+    sql`SELECT count(*) AS c,
+               count(CASE WHEN deleted_at IS NOT NULL THEN 1 END) AS d
+          FROM photos`
+  );
+  const linkRow = db.get<{ c: number; m: number | null }>(
+    sql`SELECT count(*) AS c, max(id) AS m FROM photo_tags`
+  );
+  return {
+    photoCount: photoRow?.c ?? 0,
+    // 软删除的照片数也要进指纹：删图不会改变任何行数
+    deletedPhotoCount: photoRow?.d ?? 0,
+    linkCount: linkRow?.c ?? 0,
+    maxLinkId: linkRow?.m ?? 0,
+  };
+}
+
 export const getTags = os
   .input(z.object({ folderId: z.number().optional() }).optional())
   .handler(({ input }) => {
@@ -105,6 +138,27 @@ export const getTags = os
     // 实测（合成 1 万标签 / 296 万配对）原实现峰值内存 454 MB、耗时 4.8 s，
     // 而下面的递归 CTE 只需 1.6 MB、1.7 s，且逐标签结果与原实现**完全一致**。
     // getTags 在侧边栏每次刷新标签时都会调用，原实现足以冻住界面。
+    // 这条统计在真实图库（7.7 万图 / 420 万条 photo_tags）上要 3 秒以上，
+    // 而它只在图库内容变化时才变 —— 先查缓存，命中就整段跳过。
+    // 失效：打标/改标签走修订号，导入完成/删除走 invalidateCountCache()。
+    const tagCountCacheKey = folderId ?? null;
+    const tagCountRevision = getTagSearchRevision();
+    const memoryTagCounts = readTagCountCache(
+      tagCountCacheKey,
+      tagCountRevision
+    );
+    // 落盘快照只对「全局视图」有效 —— 按文件夹统计的口径不同，不能复用。
+    const tagCountFingerprint =
+      tagCountCacheKey === null ? readTagCountFingerprint() : null;
+    const persistedTagCounts =
+      !memoryTagCounts && tagCountFingerprint
+        ? readPersistedTagCounts(tagCountFingerprint)
+        : null;
+    const cachedTagCounts = memoryTagCounts ?? persistedTagCounts;
+    if (persistedTagCounts) {
+      writeTagCountCache(tagCountCacheKey, tagCountRevision, persistedTagCounts);
+    }
+
     const folderIds = folderId
       ? getFolderSubtreeIds(
           db
@@ -124,7 +178,7 @@ export const getTags = os
           )})`
         : sql`AND p.folder_id = ${folderId}`;
 
-    const countRows = db.all<{ tag_id: number; c: number }>(sql`
+    const countRows = cachedTagCounts ? [] : db.all<{ tag_id: number; c: number }>(sql`
       WITH RECURSIVE closure(root, desc) AS (
         SELECT id, id FROM tags
         UNION
@@ -141,9 +195,16 @@ export const getTags = os
        GROUP BY c.root
     `);
 
-    const counts = new Map<number, number>();
-    for (const row of countRows) {
-      counts.set(Number(row.tag_id), Number(row.c));
+    const counts = cachedTagCounts ?? new Map<number, number>();
+    if (!cachedTagCounts) {
+      for (const row of countRows) {
+        counts.set(Number(row.tag_id), Number(row.c));
+      }
+      writeTagCountCache(tagCountCacheKey, tagCountRevision, counts);
+      if (tagCountFingerprint) {
+        // 落盘：下次（含重启后）就不用再跑这条 3 秒以上的统计
+        persistTagCounts(tagCountFingerprint, counts);
+      }
     }
 
     const result = allTags.map((t) => ({
