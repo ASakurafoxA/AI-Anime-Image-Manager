@@ -140,7 +140,8 @@ git apply --whitespace=nowarn ../patches/local.patch
 
 ```powershell
 npm install
-node node_modules/@electron-forge/cli/dist/electron-forge.js make
+node node_modules/@electron-forge/cli/dist/electron-forge.js package --platform win32 --arch x64
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build-msi-wix.ps1
 ```
 > 必须从**纯 ASCII 路径**构建（例如 `F:\AIM-build`），中文/空格路径会让 WiX 的 `light.exe` 失败。
 > 打包产物在 `out/make/`（WiX 的 MSI，以及 Squirrel 安装包）。
