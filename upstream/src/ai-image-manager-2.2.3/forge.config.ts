@@ -61,6 +61,19 @@ function stageReleaseModels(): void {
     if (entry.bundled === false) {
       continue;
     }
+    /*
+     * 自用（2026-10-18 · 会话#9）：SigLIP 与 opus-mt（中译英）已被**中文 CLIP** 取代，
+     * 合计约 320 MB，打进安装包只是让包变大 ✗ → 与 NEXT 版保持一致，这里跳过 ✓
+     */
+    if (
+      entry.subPath.startsWith("Xenova/siglip") ||
+      entry.subPath.startsWith("Xenova/opus-mt")
+    ) {
+      console.log(
+        `[release-models] 跳过已被替换的旧模型（改用中文 CLIP）：${entry.fileName}`
+      );
+      continue;
+    }
     const source = path.join("models", entry.subPath, entry.fileName);
     const target = path.join(RELEASE_MODELS_DIR, entry.subPath, entry.fileName);
     if (!fs.existsSync(source)) {
@@ -246,6 +259,16 @@ const config: ForgeConfig = {
     ...(packageTempSuffix
       ? { out: path.join("out", `package-${packageTempSuffix}`) }
       : {}),
+    /*
+     * 自用（2026-10-21 · 会话#10）：**每次构建必须改 exe 的 FileVersion**。
+     * 否则 MSI 升级时 Windows Installer 认为"exe 版本没变"而**不替换 exe**，
+     * 但 app.asar 每次都会被替换 → 旧 exe + 新 asar → 启动报
+     * `FATAL: Integrity check failed for asar archive`。
+     * 打包时设 `AIM_FILE_VERSION=2.2.3.N`，这里写入 FileVersion（fileVersion = buildVersion）。
+     */
+    ...(process.env.AIM_FILE_VERSION?.trim()
+      ? { buildVersion: process.env.AIM_FILE_VERSION.trim() }
+      : {}),
     asar: {
       unpack:
         "**/{better-sqlite3,sharp,@lancedb,@lancedb/lancedb-win32-x64-msvc,@lancedb/lancedb-win32-arm64-msvc,@img,node-*,detect-libc,semver,scripts,@xenova,@huggingface,onnxruntime-node,onnxruntime-common,onnxruntime-web,color,color-convert,color-name,color-string,simple-swizzle,is-arrayish,exifr,exiftool-vendored,exiftool-vendored.exe}/**",
@@ -254,6 +277,7 @@ const config: ForgeConfig = {
       "models-release",
       "drizzle",
       "assets/icon.png",
+      "assets/icon-tray.png",
       "THIRD_PARTY_NOTICES.md",
       "THIRD_PARTY_MODEL_NOTICES.md",
       "licenses",

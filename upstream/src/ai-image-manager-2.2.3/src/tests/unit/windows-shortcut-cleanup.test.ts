@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { APP_DISPLAY_NAME } from "@/config/private-build";
 import { cleanupBrokenLegacyStartMenuShortcut } from "@/utils/windows-shortcut-cleanup";
 
 describe("cleanupBrokenLegacyStartMenuShortcut", () => {
@@ -12,13 +13,16 @@ describe("cleanupBrokenLegacyStartMenuShortcut", () => {
     "ai-image-manager.exe"
   );
   const installInfoPath = path.join(installRoot, ".installInfo.json");
+  // ⚠️ 名字必须从 APP_DISPLAY_NAME 取，不要写死：
+  // 这个测试原本写死 "AI Image Manager.lnk"，应用改名成 "AI Anime Image Manager"
+  // 之后就一直是红的（2026-10 加 LAN 后缀时才发现并修掉）。
   const shortcutPath = path.join(
     appDataPath,
     "Microsoft",
     "Windows",
     "Start Menu",
     "Programs",
-    "AI Image Manager.lnk"
+    `${APP_DISPLAY_NAME}.lnk`
   );
 
   afterEach(() => {

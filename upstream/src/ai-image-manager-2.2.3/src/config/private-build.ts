@@ -216,6 +216,28 @@ export const PRIVATE_BUILD = {
   disableDiagnostics: false,
 
   /**
+   * 自用精简：去掉照片详情里的「AI 建议标签」整块（上游功能）。
+   * 与上游通用图像模型给的建议不同，自用版的标签体系是 Danbooru 那套，放着容易误点。
+   */
+  hideAiSuggestedTags: true,
+
+  /**
+   * 自用精简：选中工具栏只留常用项。
+   *   · 去掉「添加到相册」（相册入口已隐藏）
+   *   · 去掉「批量打标签」
+   *   · 把「重命名」从「更多」折叠菜单里提出来，直接摆在工具栏上
+   */
+  slimSelectionToolbar: true,
+
+  /**
+   * 自用（性能 C 的回退开关）：标签徽标统计是否走**旧写法**。
+   * 旧写法：整棵标签闭包 JOIN photo_tags 再 COUNT(DISTINCT) —— 实测 4106ms。
+   * 新写法（false）：叶子用直接计数、只有 19 个有子标签的节点做子树聚合，
+   * 结果与旧写法**逐一相同**（真实库比对 11,670 个标签，0 处差异）。
+   */
+  legacyBadgeCountQuery: false,
+
+  /**
    * 搜索界面精简：
    *  · 去掉「试试这样搜索」引导区（标题 + 说明 + 4 个示例词 + 通配符说明）
    *  · 去掉搜索框里带示例的 placeholder（换成朴素的「搜索」）

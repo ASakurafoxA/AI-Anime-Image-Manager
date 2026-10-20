@@ -30,8 +30,6 @@ import { Route as SettingsBehaviorRouteImport } from './routes/settings.behavior
 import { Route as SettingsAppearanceRouteImport } from './routes/settings.appearance'
 import { Route as SettingsAccelerationRouteImport } from './routes/settings.acceleration'
 import { Route as SettingsAboutRouteImport } from './routes/settings.about'
-import { Route as PeopleReviewRouteImport } from './routes/people.review'
-import { Route as PeopleIdentityIdRouteImport } from './routes/people.$identityId'
 import { Route as CullSessionIdRouteImport } from './routes/cull.$sessionId'
 import { Route as AlbumsAlbumIdRouteImport } from './routes/albums.$albumId'
 
@@ -140,16 +138,6 @@ const SettingsAboutRoute = SettingsAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => SettingsRoute,
 } as any)
-const PeopleReviewRoute = PeopleReviewRouteImport.update({
-  id: '/review',
-  path: '/review',
-  getParentRoute: () => PeopleRoute,
-} as any)
-const PeopleIdentityIdRoute = PeopleIdentityIdRouteImport.update({
-  id: '/$identityId',
-  path: '/$identityId',
-  getParentRoute: () => PeopleRoute,
-} as any)
 const CullSessionIdRoute = CullSessionIdRouteImport.update({
   id: '/$sessionId',
   path: '/$sessionId',
@@ -167,14 +155,12 @@ export interface FileRoutesByFullPath {
   '/cull': typeof CullRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/duplicates': typeof DuplicatesRoute
-  '/people': typeof PeopleRouteWithChildren
+  '/people': typeof PeopleRoute
   '/settings': typeof SettingsRouteWithChildren
   '/trash': typeof TrashRoute
   '/whats-new': typeof WhatsNewRoute
   '/albums/$albumId': typeof AlbumsAlbumIdRoute
   '/cull/$sessionId': typeof CullSessionIdRoute
-  '/people/$identityId': typeof PeopleIdentityIdRoute
-  '/people/review': typeof PeopleReviewRoute
   '/settings/about': typeof SettingsAboutRoute
   '/settings/acceleration': typeof SettingsAccelerationRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
@@ -194,14 +180,12 @@ export interface FileRoutesByTo {
   '/cull': typeof CullRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/duplicates': typeof DuplicatesRoute
-  '/people': typeof PeopleRouteWithChildren
+  '/people': typeof PeopleRoute
   '/settings': typeof SettingsRouteWithChildren
   '/trash': typeof TrashRoute
   '/whats-new': typeof WhatsNewRoute
   '/albums/$albumId': typeof AlbumsAlbumIdRoute
   '/cull/$sessionId': typeof CullSessionIdRoute
-  '/people/$identityId': typeof PeopleIdentityIdRoute
-  '/people/review': typeof PeopleReviewRoute
   '/settings/about': typeof SettingsAboutRoute
   '/settings/acceleration': typeof SettingsAccelerationRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
@@ -222,14 +206,12 @@ export interface FileRoutesById {
   '/cull': typeof CullRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/duplicates': typeof DuplicatesRoute
-  '/people': typeof PeopleRouteWithChildren
+  '/people': typeof PeopleRoute
   '/settings': typeof SettingsRouteWithChildren
   '/trash': typeof TrashRoute
   '/whats-new': typeof WhatsNewRoute
   '/albums/$albumId': typeof AlbumsAlbumIdRoute
   '/cull/$sessionId': typeof CullSessionIdRoute
-  '/people/$identityId': typeof PeopleIdentityIdRoute
-  '/people/review': typeof PeopleReviewRoute
   '/settings/about': typeof SettingsAboutRoute
   '/settings/acceleration': typeof SettingsAccelerationRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
@@ -257,8 +239,6 @@ export interface FileRouteTypes {
     | '/whats-new'
     | '/albums/$albumId'
     | '/cull/$sessionId'
-    | '/people/$identityId'
-    | '/people/review'
     | '/settings/about'
     | '/settings/acceleration'
     | '/settings/appearance'
@@ -284,8 +264,6 @@ export interface FileRouteTypes {
     | '/whats-new'
     | '/albums/$albumId'
     | '/cull/$sessionId'
-    | '/people/$identityId'
-    | '/people/review'
     | '/settings/about'
     | '/settings/acceleration'
     | '/settings/appearance'
@@ -311,8 +289,6 @@ export interface FileRouteTypes {
     | '/whats-new'
     | '/albums/$albumId'
     | '/cull/$sessionId'
-    | '/people/$identityId'
-    | '/people/review'
     | '/settings/about'
     | '/settings/acceleration'
     | '/settings/appearance'
@@ -333,7 +309,7 @@ export interface RootRouteChildren {
   CullRoute: typeof CullRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   DuplicatesRoute: typeof DuplicatesRoute
-  PeopleRoute: typeof PeopleRouteWithChildren
+  PeopleRoute: typeof PeopleRoute
   SettingsRoute: typeof SettingsRouteWithChildren
   TrashRoute: typeof TrashRoute
   WhatsNewRoute: typeof WhatsNewRoute
@@ -488,20 +464,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsAboutRouteImport
       parentRoute: typeof SettingsRoute
     }
-    '/people/review': {
-      id: '/people/review'
-      path: '/review'
-      fullPath: '/people/review'
-      preLoaderRoute: typeof PeopleReviewRouteImport
-      parentRoute: typeof PeopleRoute
-    }
-    '/people/$identityId': {
-      id: '/people/$identityId'
-      path: '/$identityId'
-      fullPath: '/people/$identityId'
-      preLoaderRoute: typeof PeopleIdentityIdRouteImport
-      parentRoute: typeof PeopleRoute
-    }
     '/cull/$sessionId': {
       id: '/cull/$sessionId'
       path: '/$sessionId'
@@ -539,19 +501,6 @@ const CullRouteChildren: CullRouteChildren = {
 }
 
 const CullRouteWithChildren = CullRoute._addFileChildren(CullRouteChildren)
-
-interface PeopleRouteChildren {
-  PeopleIdentityIdRoute: typeof PeopleIdentityIdRoute
-  PeopleReviewRoute: typeof PeopleReviewRoute
-}
-
-const PeopleRouteChildren: PeopleRouteChildren = {
-  PeopleIdentityIdRoute: PeopleIdentityIdRoute,
-  PeopleReviewRoute: PeopleReviewRoute,
-}
-
-const PeopleRouteWithChildren =
-  PeopleRoute._addFileChildren(PeopleRouteChildren)
 
 interface SettingsRouteChildren {
   SettingsAboutRoute: typeof SettingsAboutRoute
@@ -593,7 +542,7 @@ const rootRouteChildren: RootRouteChildren = {
   CullRoute: CullRouteWithChildren,
   DashboardRoute: DashboardRoute,
   DuplicatesRoute: DuplicatesRoute,
-  PeopleRoute: PeopleRouteWithChildren,
+  PeopleRoute: PeopleRoute,
   SettingsRoute: SettingsRouteWithChildren,
   TrashRoute: TrashRoute,
   WhatsNewRoute: WhatsNewRoute,
