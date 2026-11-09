@@ -29,13 +29,29 @@
 
 ## 下载
 
-| 内容 | 地址 |
-|---|---|
-| **安装包**（三个版本的 MSI） | <https://pan.baidu.com/s/1jDBvv4tL9v5_BgYhRDJcGQ?pwd=6666> 提取码 `6666` |
-| **CCIP 角色识别模型**（三版共用，339 MB） | <https://pan.baidu.com/s/1ZBRJIwIB7g1vuiTfoed4fA?pwd=6666> 提取码 `6666`；放法见 [CCIP模型安装说明.md](CCIP模型安装说明.md) |
+**两种拿法**：Release 页直接下（推荐，附校验信息），或网盘 <https://pan.baidu.com/s/1jDBvv4tL9v5_BgYhRDJcGQ?pwd=6666> 提取码 `6666`。
 
-最新版和**历史版本**都在 [Releases](https://github.com/ASakurafoxA/AI-Anime-Image-Manager/releases)（一版一个 tag，旧版不会被覆盖）。
+### 1. 安装包（MSI）
 
+| 版本 | 文件名 | 大约 |
+|---|---|---|
+| **本地版**（本仓库，WD14 打标） | `AI Anime Image Manager-2.2.3.4.msi` | 665 MB |
+| NEXT（PixAI 打标） | `AI Anime Image Manager NEXT-2.2.3.6.msi` | 336 MB |
+| WD | `AI Anime Image Manager WD-2.2.3.4.msi` | 665 MB |
+
+最新版和历史版本都在 [Releases](https://github.com/ASakurafoxA/AI-Anime-Image-Manager/releases)（一版一个 tag）；
+`校验信息.md` 里有 **MD5 / SHA-256**，下完先核对。
+
+### 2. 模型（两个，别搞混）
+
+| 模型 | 谁需要 | 大小 | 从哪里下载 | 解压/放到 |
+|---|---|---|---|---|
+| **WD14 打标模型**（给图片打标签） | 本地版 / WD | 361 MB | **已随安装包提供**，不用下 | 包内 |
+| **CCIP 角色识别模型**（认角色用） | 三版**共用** | 339 MB | ① Release 最新版附件 `CCIP-Model-20261018.zip`<br>② 网盘：<https://pan.baidu.com/s/1ZBRJIwIB7g1vuiTfoed4fA?pwd=6666> 提取码 `6666` | `<图库>\models\ccip\model_feat.onnx` |
+
+- **中文 CLIP（语义搜图）已随安装包提供**，不用单独下。
+- **PixAI 打标模型只有 NEXT 需要**（1.72 GB），本版用不到，不用下。
+- 放法细节：[CCIP模型安装说明.md](CCIP模型安装说明.md)、[MODELS.md](MODELS.md)
 ## 三个版本怎么选
 
 | 版本 | 打标模型 | 局域网/手机 | 状态 |
