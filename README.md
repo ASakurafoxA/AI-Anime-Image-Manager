@@ -21,7 +21,7 @@
 
 | 步骤 | 做什么 |
 |---|---|
-| ① 装本体 | 双击 `AI Anime Image Manager-2.2.3.3.msi`（**664.6 MB**，**WD14 与中文 CLIP 都在包里**，不用另外放模型） |
+| ① 装本体 | 双击 `AI Anime Image Manager-2.2.3.5.msi`（**664.6 MB**，**WD14 与中文 CLIP 都在包里**，不用另外放模型） |
 | ② 打开 | 开始菜单启动 → 选一个图库文件夹（放你图片的目录） |
 
 > **想用角色识别**再放一次 CCIP 模型（339 MB，三版共用）：见 [CCIP模型安装说明.md](CCIP模型安装说明.md)。
@@ -35,9 +35,9 @@
 
 | 版本 | 文件名 | 大约 |
 |---|---|---|
-| **本地版**（本仓库，WD14 打标） | `AI Anime Image Manager-2.2.3.4.msi` | 665 MB |
-| NEXT（PixAI 打标） | `AI Anime Image Manager NEXT-2.2.3.6.msi` | 336 MB |
-| WD | `AI Anime Image Manager WD-2.2.3.4.msi` | 665 MB |
+| **本地版**（本仓库，WD14 打标） | `AI Anime Image Manager-2.2.3.5.msi` | 665 MB |
+| NEXT（PixAI 打标） | `AI Anime Image Manager NEXT-2.2.3.7.msi` | 336 MB |
+| WD | `AI Anime Image Manager WD-2.2.3.5.msi` | 665 MB |
 
 最新版和历史版本都在 [Releases](https://github.com/ASakurafoxA/AI-Anime-Image-Manager/releases)（一版一个 tag）；
 `校验信息.md` 里有 **MD5 / SHA-256**，下完先核对。
